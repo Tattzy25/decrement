@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
@@ -6,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT);
 
   app.use(express.json());
 
@@ -58,7 +59,7 @@ async function startServer() {
 
     state.currentValue = newValue;
     state.lastTransaction = transaction;
-    state.history = [transaction, ...state.history].slice(0, 100); // Keep last 100
+    state.history = [transaction, ...state.history];
 
     res.json({ state, transaction });
   });
@@ -75,23 +76,30 @@ async function startServer() {
     };
     state.currentValue = newValue;
     state.lastTransaction = transaction;
-    state.history = [transaction, ...state.history].slice(0, 100);
+    state.history = [transaction, ...state.history];
     res.json({ state, transaction });
   });
 
   app.post("/api/decrement", (req, res) => {
-    const { amount, customerId } = req.body;
+    const { sourceId, customerId, versionId, model, trigger, amount } = req.body;
     const numericAmount = Number(amount);
     if (isNaN(numericAmount)) return res.status(400).json({ error: "Amount must be a number" });
     const previousValue = state.currentValue;
     const newValue = previousValue - numericAmount;
+    const timestamp = Date.now();
     const transaction: Transaction = {
-      id: uuidv4(), timestamp: Date.now(), type: TransactionType.DECREMENT,
-      amount: numericAmount, previousValue, newValue, metadata: { customerId },
+      id: uuidv4(), timestamp, type: TransactionType.DECREMENT,
+      amount: numericAmount, previousValue, newValue,
+      metadata: { sourceId, customerId, versionId, model, trigger },
     };
     state.currentValue = newValue;
     state.lastTransaction = transaction;
-    state.history = [transaction, ...state.history].slice(0, 100);
+    state.history = [transaction, ...state.history];
+    fetch(process.env.WEBHOOK_URL!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sourceId, customerId, versionId, model, trigger, amount: numericAmount, previousValue, newValue, metadata: { sourceId, customerId, versionId, model, trigger }, timestamp }),
+    }).catch(() => {});
     res.json({ state, transaction });
   });
 
