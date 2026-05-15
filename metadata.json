@@ -1,0 +1,8 @@
+{
+  "name": "Numeric",
+  "description": "A real-time numeric counter and transaction logger widget with REST API integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
