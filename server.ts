@@ -100,7 +100,7 @@ async function startServer() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sourceId, customerId, versionId, model, trigger, amount: numericAmount, previousValue, newValue, metadata: { sourceId, customerId, versionId, model, trigger }, timestamp }),
     }).catch(() => {});
-    res.json({ state, transaction });
+    res.json({ currentValue: state.currentValue, transaction });
   });
 
   // Vite middleware for development

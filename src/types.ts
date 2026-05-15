@@ -11,7 +11,7 @@ export interface Transaction {
   amount: number;
   previousValue: number;
   newValue: number;
-  metadata?: Record<string, any>; // Easily customizable fields like customerId
+  metadata?: Record<string, any>; 
 }
 
 export interface CounterState {
