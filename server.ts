@@ -8,6 +8,13 @@ async function startServer() {
   const PORT = Number(process.env.PORT);
 
   app.use(express.json());
+  app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    next();
+  });
 
   // In-memory state for this simple widget
   // In a real production app, you might use a database.
@@ -63,19 +70,26 @@ async function startServer() {
   });
 
   app.post("/api/increment", (req, res) => {
-    const { amount, customerId } = req.body;
+    const { sourceId, customerId, email, orderId, variantId, title, name, amount } = req.body;
     const numericAmount = Number(amount);
     if (isNaN(numericAmount)) return res.status(400).json({ error: "Amount must be a number" });
     const previousValue = state.currentValue;
     const newValue = previousValue + numericAmount;
+    const timestamp = Date.now();
     const transaction: Transaction = {
-      id: uuidv4(), timestamp: Date.now(), type: TransactionType.INCREMENT,
-      amount: numericAmount, previousValue, newValue, metadata: { customerId },
+      id: uuidv4(), timestamp, type: TransactionType.INCREMENT,
+      amount: numericAmount, previousValue, newValue,
+      metadata: { sourceId, customerId, email, orderId, variantId, title, name },
     };
     state.currentValue = newValue;
     state.lastTransaction = transaction;
     state.history = [transaction, ...state.history];
-    res.json({ state, transaction });
+    fetch(process.env.WEBHOOK_I_URL!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sourceId, customerId, email, orderId, variantId, title, name, amount: numericAmount, previousValue, newValue, timestamp }),
+    }).catch(() => {});
+    res.json({ currentValue: state.currentValue, transaction });
   });
 
   app.post("/api/decrement", (req, res) => {
@@ -96,7 +110,7 @@ async function startServer() {
     fetch(process.env.WEBHOOK_URL!, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sourceId, customerId, versionId, model, trigger, amount: numericAmount, previousValue, newValue, metadata: { sourceId, customerId, versionId, model, trigger }, timestamp }),
+      body: JSON.stringify({ sourceId, customerId, versionId, model, trigger, amount: numericAmount, previousValue, newValue, timestamp }),
     }).catch(() => {});
     res.json({ currentValue: state.currentValue, transaction });
   });
