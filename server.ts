@@ -16,8 +16,6 @@ async function startServer() {
     next();
   });
 
-  // In-memory state for this simple widget
-  // In a real production app, you might use a database.
   let state: CounterState = {
     currentValue: 0,
     lastTransaction: null,
