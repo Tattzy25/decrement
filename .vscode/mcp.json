@@ -1,0 +1,9 @@
+{
+	"servers": {
+		"table": {
+			"type": "http",
+			"url": "https://table-920682947.zohomcp.com/mcp/7f4788d3bad90210465db99000abc868/message"
+		}
+	},
+	"inputs": []
+}
