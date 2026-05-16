@@ -116,10 +116,18 @@ async function getCustomerBalance(customerId: string, settings: Settings): Promi
     throw { status: mode === "reject" ? 402 : 500, message: "Failed to fetch customer balance" };
   }
 
+  if (data.error) {
+    console.error("Zoho MCP error:", JSON.stringify(data.error));
+    const mode = settings.balanceFetch.onFetchFail;
+    if (mode === "default") return settings.balanceFetch.defaultBalance;
+    throw { status: mode === "reject" ? 402 : 500, message: `Zoho error: ${data.error.message ?? JSON.stringify(data.error)}` };
+  }
+
   let records: any[];
   try {
     records = JSON.parse(data.result.content[0].text).records;
   } catch {
+    console.error("Zoho parse failed, raw response:", JSON.stringify(data));
     const mode = settings.balanceFetch.onFetchFail;
     if (mode === "default") return settings.balanceFetch.defaultBalance;
     throw { status: mode === "reject" ? 402 : 500, message: "Failed to parse balance response" };
