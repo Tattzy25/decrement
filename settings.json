@@ -1,0 +1,69 @@
+{
+  "server": {
+    "port": { "type": "input", "inputType": "number", "value": 8080 },
+    "host": { "type": "input", "inputType": "text", "value": "0.0.0.0" },
+    "appUrl": { "type": "input", "inputType": "text", "value": "https://decrement-production.up.railway.app" }
+  },
+  "cors": {
+    "enabled": { "type": "toggle", "value": true },
+    "allowedOrigins": { "type": "input", "inputType": "text", "value": "*", "hint": "comma separated, * for all" },
+    "allowedMethods": { "type": "checkbox", "value": ["GET", "POST", "OPTIONS"] },
+    "allowedHeaders": { "type": "input", "inputType": "text", "value": "Content-Type", "hint": "comma separated" }
+  },
+  "routes": {
+    "increment": { "type": "toggle", "value": true },
+    "decrement": { "type": "toggle", "value": true },
+    "transactions": { "type": "toggle", "value": true },
+    "state": { "type": "toggle", "value": true }
+  },
+  "webhooks": {
+    "decrementWebhookUrl": { "type": "input", "inputType": "text", "value": "https://flow.zoho.com/916614704/flow/webhook/incoming?zapikey=1001.5d2c679a5ff913d754f05f463446a334.bff8b7de0caa7c6aa228c41f8fd184e1&isdebug=false" },
+    "incrementWebhookUrl": { "type": "input", "inputType": "text", "value": "https://flow.zoho.com/916614704/flow/webhook/incoming?zapikey=1001.663d6653d0e1f19f13a3664eb1ba9fd9.4b3ec2fa3182bdf99d9006dd69e827cf&isdebug=false" },
+    "decrementWebhookEnabled": { "type": "toggle", "value": true },
+    "incrementWebhookEnabled": { "type": "toggle", "value": true },
+    "onWebhookFail": { "type": "radio", "value": "log", "options": ["silent", "log", "retry", "error"] },
+    "retryCount": { "type": "input", "inputType": "number", "value": 3 },
+    "retryDelayMs": { "type": "input", "inputType": "number", "value": 1000 }
+  },
+  "zohoMcp": {
+    "enabled": { "type": "toggle", "value": true },
+    "url": { "type": "input", "inputType": "text", "value": "https://rolla-920682947.zohomcp.com/mcp/1cf7ef2da5e5b10800475c69a3898f35/message" },
+    "resourceId": { "type": "input", "inputType": "text", "value": "bjaat458385f970764ed78a31d3a0d8ff261e" },
+    "worksheetName": { "type": "input", "inputType": "text", "value": "Sheet1" },
+    "customerIdColumn": { "type": "input", "inputType": "text", "value": "Customer ID" },
+    "balanceColumn": { "type": "input", "inputType": "text", "value": "New Value" },
+    "rowIndexColumn": { "type": "input", "inputType": "text", "value": "row_index" },
+    "timeoutMs": { "type": "input", "inputType": "number", "value": 10000 }
+  },
+  "balanceFetch": {
+    "onFetchFail": { "type": "radio", "value": "error", "options": ["error", "default", "reject"] },
+    "onNoCustomerRecord": { "type": "radio", "value": "default", "options": ["error", "default", "reject"] },
+    "onInvalidValue": { "type": "radio", "value": "error", "options": ["error", "default", "reject"] },
+    "defaultBalance": { "type": "input", "inputType": "number", "value": 0 }
+  },
+  "balanceRules": {
+    "allowNegativeBalance": { "type": "toggle", "value": true },
+    "minimumBalance": { "type": "input", "inputType": "number", "value": 0 },
+    "maximumBalance": { "type": "input", "inputType": "number", "value": 0 }
+  },
+  "amountRules": {
+    "allowNegativeAmount": { "type": "toggle", "value": false },
+    "allowZeroAmount": { "type": "toggle", "value": false },
+    "minimumAmount": { "type": "input", "inputType": "number", "value": 0 },
+    "maximumAmount": { "type": "input", "inputType": "number", "value": 0 }
+  },
+  "rateLimit": {
+    "enabled": { "type": "toggle", "value": false },
+    "windowSeconds": { "type": "input", "inputType": "number", "value": 60 },
+    "maxRequests": { "type": "input", "inputType": "number", "value": 60 }
+  },
+  "logging": {
+    "requests": { "type": "toggle", "value": false },
+    "webhookErrors": { "type": "toggle", "value": true },
+    "balanceFetch": { "type": "toggle", "value": false }
+  },
+  "response": {
+    "includeTransaction": { "type": "toggle", "value": true }
+  },
+  "custom": {}
+}
